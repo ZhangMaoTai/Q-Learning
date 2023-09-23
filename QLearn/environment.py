@@ -129,12 +129,13 @@ class environment:
 
 
 if __name__ == "__main__":
-    env = environment("/Users/zhangjiasheng/Desktop/交大/Trex/words_250000_train.txt")
+    env = environment("C:\CODE学习\GitRepo\Q-Learning\words_250000.txt")
+    env.reset()
     print(env.show_current_word())
 
     round = 0
     while True:
-        state, new_word, reward, done = env.step(1)
+        state, new_word, reward, done, word_success, letter_success = env.step(1)
         print(new_word, reward, done)
         print(state.shape)
 

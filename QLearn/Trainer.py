@@ -34,6 +34,7 @@ class QTrainer:
             num_letter_success = 0
             num_letter_play = 0
             episode_reward_list = []
+            episode_len_list = []
 
             # collect data
             self.agent.eval()
@@ -42,6 +43,7 @@ class QTrainer:
                 # each episode
                 state = self.env.reset()
                 episode_reward = 0
+                episode_len = 0
                 false_action = []
 
                 while True:
@@ -54,6 +56,7 @@ class QTrainer:
                     episode_reward += reward
                     num_letter_success += (1 if letter_success else 0)
                     num_letter_play += 1
+                    episode_len += 1
 
                     if not letter_success:
                         false_action.append(action)
@@ -63,13 +66,15 @@ class QTrainer:
                         num_episode += 1
                         num_word_success += (1 if word_success else 0)
                         episode_reward_list.append(episode_reward)
+                        episode_len_list.append(episode_len)
                         self.agent.reset_noise()
                         break
 
                 if exp_dataset is not None:
                     self.writer.add_scalar("losses/word_success", num_word_success / num_episode, updates)
                     self.writer.add_scalar("losses/letter_success", num_letter_success / num_letter_play, updates)
-                    self.writer.add_scalar("losses/rewards", np.mean(episode_reward_list), updates)
+                    self.writer.add_scalar("losses/rewards", np.sum(episode_reward_list) / num_episode, updates)
+                    self.writer.add_scalar("losses/episode_len", np.mean(episode_len_list), updates)
                     break
 
             # train
