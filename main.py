@@ -60,6 +60,8 @@ def main():
         save_dir=args.save_dir
     )
 
+    log.info("Done train")
+
 
 if __name__ == "__main__":
     main()
