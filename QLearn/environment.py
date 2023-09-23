@@ -7,9 +7,9 @@ def cal_reward(is_match: bool,
                num_try: int,
                remain_try: int):
     if is_match:
-        return 1.
+        return 2.25 - num_try * 0.075               # 越往后，越不应该犯错；所以前面奖励大，后面奖励小
     else:
-        return -1.
+        return -1. - (6. - remain_try) * 0.25       # 越往后，越不应该犯错；所以后面犯错的惩罚高
 
 
 def right_pad(letter_list,
