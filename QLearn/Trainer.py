@@ -74,7 +74,7 @@ class QTrainer:
                     self.writer.add_scalar("losses/word_success", num_word_success / num_episode, updates)
                     self.writer.add_scalar("losses/letter_success", num_letter_success / num_letter_play, updates)
                     self.writer.add_scalar("losses/rewards", np.sum(episode_reward_list) / num_episode, updates)
-                    self.writer.add_scalar("losses/episode_len", np.mean(episode_len_list), updates)
+                    self.writer.add_scalar("losses/episode_len", np.sum(episode_len_list) / num_episode, updates)
                     break
 
             # train
