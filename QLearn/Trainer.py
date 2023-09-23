@@ -30,7 +30,9 @@ class QTrainer:
 
         for updates in range(1, num_updates+1):
             num_episode = 0
-            num_success = 0
+            num_word_success = 0
+            num_letter_success = 0
+            num_letter_play = 0
             episode_reward_list = []
 
             # collect data
@@ -40,25 +42,33 @@ class QTrainer:
                 # each episode
                 state = self.env.reset()
                 episode_reward = 0
+                false_action = []
 
                 while True:
-                    action = self.agent.get_action(state)
-                    next_state, new_word, reward, done, success = self.env.step(action)
+                    action = self.agent.get_action(state=state,
+                                                   false_action=false_action)
+                    next_state, new_word, reward, done, word_success, letter_success = self.env.step(action)
                     exp_dataset = self.replay_buffer.push(state, action, reward, next_state, done)
 
                     state = next_state
                     episode_reward += reward
+                    num_letter_success += (1 if letter_success else 0)
+                    num_letter_play += 1
+
+                    if not letter_success:
+                        false_action.append(action)
                     progress_bar.update(1)
 
                     if done or exp_dataset is not None:
                         num_episode += 1
-                        num_success += (1 if success else 0)
+                        num_word_success += (1 if word_success else 0)
                         episode_reward_list.append(episode_reward)
                         self.agent.reset_noise()
                         break
 
                 if exp_dataset is not None:
-                    self.writer.add_scalar("losses/success", num_success / num_episode, updates)
+                    self.writer.add_scalar("losses/word_success", num_word_success / num_episode, updates)
+                    self.writer.add_scalar("losses/letter_success", num_letter_success / num_letter_play, updates)
                     self.writer.add_scalar("losses/rewards", np.mean(episode_reward_list), updates)
                     break
 

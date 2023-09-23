@@ -33,10 +33,15 @@ class Agent:
                                            lr=self.learning_rate)
         self.MSE_loss = nn.MSELoss()
 
-    def get_action(self, state, eps=0.20):
+    def get_action(self,
+                   state,
+                   false_action: list,
+                   eps=0.20):
         state = state.to(self.device)
-        qvals = self.eval_model(state)
-        action = np.argmax(qvals.cpu().detach().numpy())
+        qvals = self.eval_model(state).cpu().detach().numpy()
+
+        qvals[0][false_action] = float('-inf')      # 不考虑false_action
+        action = np.argmax(qvals)
 
         # if np.random.randn() > eps:
         #     return random.sample(list(range(26)), 1)[0]

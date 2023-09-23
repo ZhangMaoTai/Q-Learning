@@ -85,6 +85,7 @@ class environment:
                 self.remain_try -= 1
                 new_word = last_pred_word
                 reward = cal_reward(is_match=False, num_try=self.num_try, remain_try=self.remain_try)
+                letter_success = False
             else:
                 new_word = [
                     action_letter if i in match_index else last_pred_word[i]
@@ -92,21 +93,22 @@ class environment:
                 ]
                 new_word = "".join(new_word)
                 reward = cal_reward(is_match=True, num_try=self.num_try, remain_try=self.remain_try)
+                letter_success = True
 
             self.word_list.append(new_word)
 
             if "_" not in new_word or self.remain_try == 0:
                 done = True
                 if "_" not in new_word:
-                    success = True
+                    word_success = True
                 else:
-                    success = False
+                    word_success = False
 
             else:
                 done = False
-                success = None
+                word_success = None
 
-            return self.get_state(), new_word, reward, done, success
+            return self.get_state(), new_word, reward, done, word_success, letter_success
 
         else:
             raise RuntimeError("Can't call step because it is over.")
