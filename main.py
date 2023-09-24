@@ -5,6 +5,7 @@ from Model.models import Agent
 from QLearn.experience import BasicBuffer
 from QLearn.Trainer import QTrainer
 from QLearn.environment import environment
+from QLearn.eval import Evaler
 from utils.util import seed_everything, get_logger
 
 
@@ -18,14 +19,19 @@ def parse_args():
 
     parser.add_argument("--mini_epoch", type=int, default=1)
     parser.add_argument("--num_updates", type=int, default=10000)
+    parser.add_argument("--per_updates_eval", type=int, default=1000)
 
     parser.add_argument("--learning_rate", type=float, default=3e-4)
     parser.add_argument("--gamma", type=float, default=0.99)
     parser.add_argument("--tau", type=float, default=0.99)
 
-    parser.add_argument("--vocab_path", type=str,
+    parser.add_argument("--train_vocab_path", type=str,
                         default="./words_240000.txt", required=False,
                         help="The train vocab path")
+    parser.add_argument("--eval_vocab_path", type=str,
+                        default="./words_10000.txt", required=False,
+                        help="The eval vocab path")
+
     parser.add_argument("--save_dir", type=str,
                         default="./save_model", required=False)
 
@@ -40,19 +46,25 @@ def main():
         os.path.join(args.save_dir, "train.log")
     )
 
-    env = environment(vocab_path=args.vocab_path)
+    train_env = environment(vocab_path=args.train_vocab_path)
+    eval_env = environment(vocab_path=args.eval_vocab_path)
     buffer = BasicBuffer(max_size=args.max_size, batch_size=args.batch_size)
+
     agent = Agent(learning_rate=args.learning_rate,
                   gamma=args.gamma,
                   tau=args.tau)
 
+    evaler = Evaler(agent=agent, env=eval_env)
+
     log.info("Done init")
 
     trainer = QTrainer(
-        env=env,
+        train_env=train_env,
+        evaler=evaler,
         agent=agent,
         replay_buffer=buffer,
         mini_epoch=args.mini_epoch,
+        per_updates_eval=args.per_updates_eval,
         log=log
     )
 

@@ -61,13 +61,24 @@ class environment:
         return self.current_word
 
     def reset(self):
-        self.current_id += 1
+        if self.current_id >= self.vocab_size:
+            self.current_id = 0
+        else:
+            self.current_id += 1
         self.current_word = self.vocab[self.current_id]
         self.num_try = 0
         self.remain_try = self.max_try
         self.action_list = []
         self.word_list = ["_" * len(self.current_word)]
         return self.get_state()
+
+    def from_start(self):
+        self.current_id = -1
+        self.current_word = None
+        self.num_try = None
+        self.remain_try = None
+        self.action_list = None
+        self.word_list = None
 
     def step(self, action: int):
         action_letter = ACTION_MAPPING_INT_TO_STR[action]
@@ -77,15 +88,21 @@ class environment:
             self.action_list.append(action_letter)
             last_pred_word = self.word_list[-1]
 
-            match_index = [i
-                           for i in range(len(self.current_word))
-                           if self.current_word[i] == action_letter]
+            # 预测正确，并且上一轮没有预测出来（不能重复预测）
+            match_index = [
+                i
+                for i in range(len(self.current_word))
+                if self.current_word[i] == action_letter and last_pred_word[i] == "_"
+            ]
 
+            # 预测错误
             if len(match_index) == 0:
                 self.remain_try -= 1
                 new_word = last_pred_word
                 reward = cal_reward(is_match=False, num_try=self.num_try, remain_try=self.remain_try)
                 letter_success = False
+
+            # 预测成功
             else:
                 new_word = [
                     action_letter if i in match_index else last_pred_word[i]

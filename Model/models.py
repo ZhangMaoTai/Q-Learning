@@ -35,12 +35,12 @@ class Agent:
 
     def get_action(self,
                    state,
-                   false_action: list,
+                   history_action: list,
                    eps=0.20):
         state = state.to(self.device)
         qvals = self.eval_model(state).cpu().detach().numpy()
 
-        qvals[0][false_action] = float('-inf')      # 不考虑false_action
+        qvals[0][history_action] = float('-inf')      # 不考虑history_action
         action = np.argmax(qvals)
 
         # if np.random.randn() > eps:
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     agent = Agent()
 
     state = torch.randn((1, 1, MAX_TIME_STEP, MAX_WORD_LEN))
-    print(agent.get_action(state))
+    print(agent.get_action(state, []))
 
     states = torch.randn((16, 1, MAX_TIME_STEP, MAX_WORD_LEN))
     next_states = torch.randn((16, 1, MAX_TIME_STEP, MAX_WORD_LEN))

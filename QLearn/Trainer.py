@@ -5,23 +5,28 @@ import wandb
 from utils.util import wandb_start
 from QLearn.experience import BasicBuffer
 from QLearn.environment import environment
+from QLearn.eval import Evaler
 from Model.models import Agent
 
 
 class QTrainer:
     def __init__(self,
-                 env: environment,
+                 train_env: environment,
+                 evaler: Evaler,
                  agent: Agent,
                  replay_buffer: BasicBuffer,
-                 mini_epoch,
+                 mini_epoch: int,
+                 per_updates_eval: int,
                  log
                  ):
-        self.env = env
+        self.train_env = train_env
+        self.evaler = evaler
         self.replay_buffer = replay_buffer
         self.agent = agent
         self.log = log
 
         self.mini_epoch = mini_epoch
+        self.per_updates_eval = per_updates_eval
 
         # init wandb
         self.writer = wandb_start(True)
@@ -44,16 +49,15 @@ class QTrainer:
             progress_bar = tqdm(range(self.replay_buffer.max_size))
             while True:
                 # each episode
-                state = self.env.reset()
+                state = self.train_env.reset()
                 episode_reward = 0
                 episode_len = 0
-                false_action = []
                 history_action = []
 
                 while True:
                     action = self.agent.get_action(state=state,
-                                                   false_action=false_action)
-                    next_state, new_word, reward, done, word_success, letter_success = self.env.step(action)
+                                                   history_action=history_action)
+                    next_state, new_word, reward, done, word_success, letter_success = self.train_env.step(action)
                     exp_dataset = self.replay_buffer.push(state, action, reward, next_state, done)
 
                     state = next_state
@@ -62,8 +66,6 @@ class QTrainer:
                     num_letter_play += 1
                     episode_len += 1
 
-                    if not letter_success:
-                        false_action.append(action)
                     history_action.append(action)
                     progress_bar.update(1)
 
@@ -76,7 +78,7 @@ class QTrainer:
 
                         if log_flag:
                             self.log.info("Current word: {}. History action: {}. Success: {}".format(
-                                self.env.show_current_word(), " ".join([str(i) for i in history_action]), word_success
+                                self.train_env.show_current_word(), " ".join([str(i) for i in history_action]), word_success
                                 )
                             )
                             log_flag = False
@@ -109,7 +111,17 @@ class QTrainer:
 
                     progress_bar.update(1)
 
-            if updates % 1000 == 0:
+            # eval & save
+            if updates % self.per_updates_eval == 0:
+                # eval
+                self.evaler.set_agent(self.agent)
+                result = self.evaler.eval()
+                self.writer.add_scalar("TestSet/word_success_rate", result['word_success_rate'], updates)
+                self.writer.add_scalar("TestSet/letter_success_rate", result['letter_success_rate'], updates)
+                self.writer.add_scalar("TestSet/episode_reward_mean", result['episode_reward_mean'], updates)
+                self.writer.add_scalar("TestSet/episode_len_mean", result['episode_len_mean'], updates)
+
+                # save
                 self.agent.save_checkpoint(
                     os.path.join(save_dir, "{}update.pth".format(updates))
                 )
