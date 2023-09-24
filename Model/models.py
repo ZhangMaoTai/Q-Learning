@@ -116,7 +116,7 @@ if __name__ == "__main__":
     from utils.const import *
     agent = Agent()
 
-    state = torch.randn((1, 1, MAX_TIME_STEP, MAX_WORD_LEN))
+    state = torch.randint(0, 26, (1, 1, MAX_TIME_STEP, MAX_WORD_LEN))
     print(agent.get_action(state, []))
 
     states = torch.randn((16, 1, MAX_TIME_STEP, MAX_WORD_LEN))

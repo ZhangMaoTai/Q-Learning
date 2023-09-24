@@ -106,7 +106,7 @@ class ConvDuelingDQN(nn.Module):
         state = state.permute(0, 3, 1, 2)   # batch, EMBEDDING_DIM, MAX_TIME_STEP, MAX_WORD_LEN
 
         features = self.conv(state)
-        features = features.view(features.size(0), -1)
+        features = features.reshape(features.size(0), -1)
         values = self.value_stream(features)
         advantages = self.advantage_stream(features)
         qvals = values + (advantages - advantages.mean())
