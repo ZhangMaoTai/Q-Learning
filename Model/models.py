@@ -119,8 +119,8 @@ if __name__ == "__main__":
     state = torch.randint(0, 26, (1, 1, MAX_TIME_STEP, MAX_WORD_LEN))
     print(agent.get_action(state, []))
 
-    states = torch.randn((16, 1, MAX_TIME_STEP, MAX_WORD_LEN))
-    next_states = torch.randn((16, 1, MAX_TIME_STEP, MAX_WORD_LEN))
+    states = torch.randint(0, 26, (16, 1, MAX_TIME_STEP, MAX_WORD_LEN))
+    next_states = torch.randint(0, 26, (16, 1, MAX_TIME_STEP, MAX_WORD_LEN))
     actions = torch.randint(0, 26, (16,))
     rewards = torch.randn((16,))
     dones = [True] * 16
