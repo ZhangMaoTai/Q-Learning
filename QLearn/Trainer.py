@@ -13,11 +13,13 @@ class QTrainer:
                  env: environment,
                  agent: Agent,
                  replay_buffer: BasicBuffer,
-                 mini_epoch
+                 mini_epoch,
+                 log
                  ):
         self.env = env
         self.replay_buffer = replay_buffer
         self.agent = agent
+        self.log = log
 
         self.mini_epoch = mini_epoch
 
@@ -35,6 +37,7 @@ class QTrainer:
             num_letter_play = 0
             episode_reward_list = []
             episode_len_list = []
+            log_flag = True
 
             # collect data
             self.agent.eval()
@@ -45,6 +48,7 @@ class QTrainer:
                 episode_reward = 0
                 episode_len = 0
                 false_action = []
+                history_action = []
 
                 while True:
                     action = self.agent.get_action(state=state,
@@ -60,6 +64,7 @@ class QTrainer:
 
                     if not letter_success:
                         false_action.append(action)
+                    history_action.append(action)
                     progress_bar.update(1)
 
                     if done or exp_dataset is not None:
@@ -68,6 +73,13 @@ class QTrainer:
                         episode_reward_list.append(episode_reward)
                         episode_len_list.append(episode_len)
                         self.agent.reset_noise()
+
+                        if log_flag:
+                            self.log.info("Current word: {}. History action: {}. Success: {}".format(
+                                self.env.show_current_word(), " ".join(history_action), word_success
+                                )
+                            )
+                            log_flag = False
                         break
 
                 if exp_dataset is not None:

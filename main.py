@@ -52,7 +52,8 @@ def main():
         env=env,
         agent=agent,
         replay_buffer=buffer,
-        mini_epoch=args.mini_epoch
+        mini_epoch=args.mini_epoch,
+        log=log
     )
 
     trainer.train(
