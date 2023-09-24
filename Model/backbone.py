@@ -62,13 +62,17 @@ class ConvDuelingDQN(nn.Module):
 
     def __init__(self,
                  input_dim: tuple = (1, MAX_TIME_STEP, MAX_WORD_LEN),
-                 output_dim: int = OUTPUT_DIM):
+                 output_dim: int = OUTPUT_DIM,
+                 embedding_dim: int = EMBEDDING_DIM
+                 ):
         super(ConvDuelingDQN, self).__init__()
         self.input_dim = input_dim
         self.output_dim = output_dim
 
+        self.embedding = nn.Embedding(28, embedding_dim)
+
         self.conv = nn.Sequential(
-            nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(embedding_dim, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
 
@@ -96,6 +100,11 @@ class ConvDuelingDQN(nn.Module):
         )
 
     def forward(self, state):
+        # state: batch, 1, MAX_TIME_STEP, MAX_WORD_LEN
+        state = state.squeeze(1)            # batch, MAX_TIME_STEP, MAX_WORD_LEN
+        state = self.embedding(state)       # batch, MAX_TIME_STEP, MAX_WORD_LEN, EMBEDDING_DIM
+        state = state.permute(0, 3, 1, 2)   # batch, EMBEDDING_DIM, MAX_TIME_STEP, MAX_WORD_LEN
+
         features = self.conv(state)
         features = features.view(features.size(0), -1)
         values = self.value_stream(features)
