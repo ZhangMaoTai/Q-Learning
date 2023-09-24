@@ -7,6 +7,7 @@ from QLearn.experience import BasicBuffer
 from QLearn.environment import environment
 from QLearn.eval import Evaler
 from Model.models import Agent
+from utils.const import *
 
 
 class QTrainer:
@@ -45,7 +46,9 @@ class QTrainer:
             log_flag = True
 
             # collect data
-            self.agent.eval()
+
+            # self.agent.eval()
+            self.agent.train()
             progress_bar = tqdm(range(self.replay_buffer.max_size))
             while True:
                 # each episode
@@ -78,7 +81,9 @@ class QTrainer:
 
                         if log_flag:
                             self.log.info("Current word: {}. History action: {}. Success: {}".format(
-                                self.train_env.show_current_word(), " ".join([str(i) for i in history_action]), word_success
+                                self.train_env.show_current_word(), " ".join(
+                                    [ACTION_MAPPING_INT_TO_STR[int(i)] for i in history_action]
+                                ), word_success
                                 )
                             )
                             log_flag = False
