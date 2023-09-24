@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import torch.nn.utils
 from tqdm.auto import tqdm
 import wandb
 from utils.util import wandb_start
@@ -34,7 +35,8 @@ class QTrainer:
 
     def train(self,
               num_updates,
-              save_dir):
+              save_dir,
+              max_norm):
 
         for updates in range(1, num_updates+1):
             num_episode = 0
@@ -104,14 +106,16 @@ class QTrainer:
 
                 for _ in range(self.mini_epoch):
                     for batch in exp_dataset:
-                        loss = self.agent.compute_loss(batch)
-
                         self.agent.optimizer.zero_grad()
+
+                        loss = self.agent.compute_loss(batch)
                         loss.backward()
+
+                        torch.nn.utils.clip_grad_norm_(self.agent.eval_model.parameters(), max_norm)
                         self.agent.optimizer.step()
+                        self.agent.scheduler.step()
 
                         self.agent.update_target()
-
                         self.writer.add_scalar("losses/loss", loss, updates)
 
                     progress_bar.update(1)

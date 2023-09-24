@@ -3,6 +3,7 @@ import random
 import torch
 import torch.nn as nn
 import torch.autograd as autograd
+from transformers import get_scheduler
 import numpy as np
 
 from QLearn.experience import BasicBuffer
@@ -14,11 +15,16 @@ class Agent:
     def __init__(self,
                  learning_rate=3e-4,
                  gamma=0.99,
-                 tau=0.99
+                 tau=0.99,
+                 num_warmup_steps=100,
+                 num_training_steps=1000
                  ):
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.tau = tau
+
+        self.num_warmup_steps = num_warmup_steps
+        self.num_training_steps = num_training_steps
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -34,6 +40,12 @@ class Agent:
 
         self.optimizer = torch.optim.AdamW(self.eval_model.parameters(),
                                            lr=self.learning_rate)
+        self.scheduler = get_scheduler(
+            name="linear",
+            optimizer=self.optimizer,
+            num_warmup_steps=self.num_warmup_steps,
+            num_training_steps=self.num_training_steps
+        )
         self.MSE_loss = nn.MSELoss()
 
     def get_action(self,

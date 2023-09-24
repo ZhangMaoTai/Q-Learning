@@ -6,7 +6,9 @@ python main.py \
 --mini_epoch 1 \
 --num_updates 10000 \
 --per_updates_eval 1000 \
+--num_warmup_steps 100 \
 --learning_rate 3e-4 \
+--max_norm 1.0 \
 --gamma 0.99 \
 --tau 0.99 \
 --train_vocab_path ./words_240000.txt \

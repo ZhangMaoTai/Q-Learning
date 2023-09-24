@@ -22,6 +22,8 @@ def parse_args():
     parser.add_argument("--per_updates_eval", type=int, default=1000)
 
     parser.add_argument("--learning_rate", type=float, default=3e-4)
+    parser.add_argument("--num_warmup_steps", type=int, default=100)
+    parser.add_argument("--max_norm", type=float, default=1.0)
     parser.add_argument("--gamma", type=float, default=0.99)
     parser.add_argument("--tau", type=float, default=0.99)
 
@@ -52,7 +54,10 @@ def main():
 
     agent = Agent(learning_rate=args.learning_rate,
                   gamma=args.gamma,
-                  tau=args.tau)
+                  tau=args.tau,
+                  num_warmup_steps=args.num_warmup_steps,
+                  num_training_steps=args.num_updates * args.mini_epoch * (args.max_size / args.batch_size)
+                  )
 
     evaler = Evaler(agent=agent, env=eval_env)
 
@@ -70,7 +75,8 @@ def main():
 
     trainer.train(
         num_updates=args.num_updates,
-        save_dir=args.save_dir
+        save_dir=args.save_dir,
+        max_norm=args.max_norm
     )
 
     log.info("Done train")
