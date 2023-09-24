@@ -114,7 +114,9 @@ class ConvDuelingDQN(nn.Module):
         return qvals
 
     def feature_size(self):
-        return self.conv(autograd.Variable(torch.zeros(1, *self.input_dim))).view(1, -1).size(1)
+        return self.conv(
+            autograd.Variable(torch.zeros(1, *(EMBEDDING_DIM, self.input_dim[1], self.input_dim[2])))
+        ).view(1, -1).size(1)
 
     def reset_noise(self):
         for module in self.modules():
