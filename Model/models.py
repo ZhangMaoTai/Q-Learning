@@ -53,7 +53,7 @@ class Agent:
         actions = actions.to(self.device)               # torch.Size([batch])
         rewards = rewards.to(self.device)               # torch.Size([batch])
         next_states = next_states.to(self.device)
-        dones = torch.tensor(dones, dtype=torch.float32)    # torch.Size([batch])
+        dones = torch.tensor(dones, dtype=torch.float32).to(self.device)    # torch.Size([batch])
 
         curr_Q = self.eval_model(states).gather(1, actions.unsqueeze(1))         # torch.Size([batch, 1])
         curr_Q = curr_Q.squeeze(1)                      # torch.Size([batch])
