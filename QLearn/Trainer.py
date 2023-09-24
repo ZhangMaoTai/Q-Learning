@@ -76,7 +76,7 @@ class QTrainer:
 
                         if log_flag:
                             self.log.info("Current word: {}. History action: {}. Success: {}".format(
-                                self.env.show_current_word(), " ".join(history_action), word_success
+                                self.env.show_current_word(), " ".join([str(i) for i in history_action]), word_success
                                 )
                             )
                             log_flag = False
