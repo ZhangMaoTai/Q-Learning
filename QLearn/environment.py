@@ -142,7 +142,7 @@ class environment:
             for word in word_list
         ]                                                                   # list[list[int]]
 
-        return torch.tensor(id_list, dtype=torch.float32).unsqueeze(0).unsqueeze(0)      # shape = (1, 1, MAX_TIME_STEP, MAX_WORD_LEN)
+        return torch.tensor(id_list, dtype=torch.int64).unsqueeze(0).unsqueeze(0)      # shape = (1, 1, MAX_TIME_STEP, MAX_WORD_LEN)
 
 
 if __name__ == "__main__":
