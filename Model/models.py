@@ -6,7 +6,7 @@ import torch.autograd as autograd
 import numpy as np
 
 from QLearn.experience import BasicBuffer
-from Model.backbone import ConvDuelingDQN
+from Model.backbone import ConvDuelingDQN, init_weights
 
 
 class Agent:
@@ -24,6 +24,9 @@ class Agent:
 
         self.eval_model = ConvDuelingDQN().to(self.device)
         self.target_model = ConvDuelingDQN().to(self.device)
+
+        self.eval_model.apply(init_weights)
+        self.target_model.apply(init_weights)
 
         # hard copy model parameters to target model parameters
         for eval_param, target_param in zip(self.eval_model.parameters(), self.target_model.parameters()):

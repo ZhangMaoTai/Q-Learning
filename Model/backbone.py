@@ -113,6 +113,15 @@ class ConvDuelingDQN(nn.Module):
                 module.reset_noise()
 
 
+def init_weights(m):
+    if isinstance(m, nn.Conv2d):
+        nn.init.kaiming_normal_(m.weight.data)
+        nn.init.constant_(m.bias.data, 0.01)
+    elif isinstance(m, nn.Linear):
+        nn.init.xavier_normal_(m.weight.data)
+        nn.init.constant_(m.bias.data, 0.01)
+
+
 if __name__ == "__main__":
     data = torch.randn((16, 1, MAX_TIME_STEP, MAX_WORD_LEN))
     print(data.shape)       # torch.Size([16, 1, 12, 32])
