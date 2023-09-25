@@ -124,6 +124,63 @@ class ConvDuelingDQN(nn.Module):
                 module.reset_noise()
 
 
+class FCDuelingDQN(nn.Module):
+
+    def __init__(self,
+                 input_dim: tuple = (1, MAX_TIME_STEP, MAX_WORD_LEN),
+                 output_dim: int = OUTPUT_DIM,
+                 embedding_dim: int = EMBEDDING_DIM
+                 ):
+        super(FCDuelingDQN, self).__init__()
+        self.input_dim = input_dim
+        self.output_dim = output_dim
+
+        self.embedding = nn.Embedding(28, embedding_dim)
+
+        self.common_fc = nn.Sequential(
+            nn.Linear(input_dim[-1] * embedding_dim, 128),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+
+            nn.Linear(128, 256),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+        )
+
+        self.value_stream = nn.Sequential(
+            nn.Linear(256 * input_dim[1], 128),
+            nn.ReLU(),
+            nn.Linear(128, 1)
+        )
+
+        self.advantage_stream = nn.Sequential(
+            nn.Linear(256 * input_dim[1], 128),
+            nn.ReLU(),
+            nn.Linear(128, self.output_dim)
+        )
+
+    def forward(self, state):
+        # state: batch, 1, MAX_TIME_STEP, MAX_WORD_LEN
+        state = state.squeeze(1)            # batch, MAX_TIME_STEP, MAX_WORD_LEN
+        state = self.embedding(state)       # batch, MAX_TIME_STEP, MAX_WORD_LEN, EMBEDDING_DIM
+        state = state.view(state.size(0),
+                           state.size(1),
+                           -1)              # batch, MAX_TIME_STEP, MAX_WORD_LEN * EMBEDDING_DIM
+
+        features = self.common_fc(state)                        # batch, MAX_TIME_STEP, 256
+        features = features.view(features.size(0), -1)          # batch, MAX_TIME_STEP * 256
+        values = self.value_stream(features)
+        advantages = self.advantage_stream(features)
+        qvals = values + (advantages - advantages.mean())
+
+        return qvals
+
+    def reset_noise(self):
+        for module in self.modules():
+            if isinstance(module, NoisyLinear):
+                module.reset_noise()
+
+
 def init_weights(m):
     if isinstance(m, nn.Conv2d):
         nn.init.kaiming_normal_(m.weight.data)

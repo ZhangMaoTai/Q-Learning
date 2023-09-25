@@ -7,7 +7,7 @@ from transformers import get_scheduler
 import numpy as np
 
 from QLearn.experience import BasicBuffer
-from Model.backbone import ConvDuelingDQN, init_weights
+from Model.backbone import ConvDuelingDQN, init_weights, FCDuelingDQN
 
 
 class Agent:
@@ -28,8 +28,8 @@ class Agent:
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.eval_model = ConvDuelingDQN().to(self.device)
-        self.target_model = ConvDuelingDQN().to(self.device)
+        self.eval_model = FCDuelingDQN().to(self.device)
+        self.target_model = FCDuelingDQN().to(self.device)
 
         self.eval_model.apply(init_weights)
         self.target_model.apply(init_weights)
@@ -58,8 +58,8 @@ class Agent:
         qvals[0][history_action] = float('-inf')      # 不考虑history_action
         action = np.argmax(qvals)
 
-        # if np.random.randn() > eps:
-        #     return random.sample(list(range(26)), 1)[0]
+        if np.random.randn() > eps:
+            return random.sample(list(range(26)), 1)[0]
         return action
 
     def compute_loss(self, batch):

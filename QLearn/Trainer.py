@@ -49,8 +49,8 @@ class QTrainer:
 
             # collect data
 
-            # self.agent.eval()
-            self.agent.train()
+            self.agent.eval()
+            # self.agent.train()
             progress_bar = tqdm(range(self.replay_buffer.max_size))
             while True:
                 # each episode
