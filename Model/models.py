@@ -74,13 +74,13 @@ class Agent:
         curr_Q = curr_Q.squeeze(1)                      # torch.Size([batch])
 
         # DQN
-        # next_Q = self.target_model(next_states).detach()
-        # max_next_Q = torch.max(next_Q, 1)[0]          # torch.Size([batch])
+        next_Q = self.target_model(next_states).detach()
+        max_next_Q = torch.max(next_Q, 1)[0]          # torch.Size([batch])
 
-        # DDQN
-        with torch.no_grad():
-            next_a = self.eval_model(next_states).argmax(-1)     # torch.Size([batch])
-            max_next_Q = self.target_model(next_states).gather(1, next_a.unsqueeze(1)).squeeze(1)   # torch.Size([batch])
+        # # DDQN
+        # with torch.no_grad():
+        #     next_a = self.eval_model(next_states).argmax(-1)     # torch.Size([batch])
+        #     max_next_Q = self.target_model(next_states).gather(1, next_a.unsqueeze(1)).squeeze(1)   # torch.Size([batch])
 
         expected_Q = rewards + self.gamma * max_next_Q * (1. - dones)
 
