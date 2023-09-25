@@ -63,8 +63,8 @@ class Trainer:
             self.model.train()
 
             for updates, (x_train, y_train) in enumerate(self.train_dataloader):
-                x_train = {k: v.to(self.device) for k, v in x_train.items()}
-                y_train = {k: v.to(self.device) for k, v in y_train.items()}
+                x_train = x_train.to(self.device)
+                y_train = y_train.to(self.device)
 
                 y_hat = self.model(x_train)
                 loss = total_loss(y_hat, y_train)
@@ -100,10 +100,10 @@ class Trainer:
 
         with torch.no_grad():
             for i, (x_test, y_test) in enumerate(self.eval_dataloader):
-                x_test = {k: v.to(self.device) for k, v in x_test.items()}
+                x_test = x_test.to(self.device)
                 output = self.model(x_test).to('cpu')
 
-                y_test = {k: v.to('cpu') for k, v in y_test.items()}
+                y_test = y_test.to('cpu')
 
                 if i == 0:
                     y_hat_total = output
