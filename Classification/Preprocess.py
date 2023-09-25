@@ -50,21 +50,34 @@ def save_data(x, y, save_json):
 
 
 if __name__ == "__main__":
-    train_x, train_y = construct_data("../words_240000.txt")
-    test_x, test_y = construct_data("../words_10000.txt")
-
-    print("train :", len(train_x))
-    print("test :", len(test_x))
-
-    save_data(train_x, train_y, "../train.json")
-    save_data(test_x, test_y, "../test.json")
+    # train_x, train_y = construct_data("../words_240000.txt")
+    # test_x, test_y = construct_data("../words_10000.txt")
+    #
+    # print("train :", len(train_x))
+    # print("test :", len(test_x))
+    #
+    # save_data(train_x, train_y, "../train.json")
+    # save_data(test_x, test_y, "../test.json")
+    #
+    # with open("../test.json", "r") as f:
+    #     data = json.load(f)
+    #
+    # with open("../test_small.json", "w") as f:
+    #     json.dump(
+    #         {"x": data["x"][0:10000], "y": data["y"][0:10000]},
+    #         f
+    #     )
 
     with open("../test.json", "r") as f:
-        data = json.load(f)
+        test = json.load(f)
 
-    with open("../test_small.json", "w") as f:
+    with open("../train.json", "r") as f:
+        train = json.load(f)
+
+    with open("../train.json", "w") as f:
         json.dump(
-            {"x": data["x"][0:10000], "y": data["y"][0:10000]},
+            {"x": train["x"] + test['x'][10000:],
+             "y": train["y"] + test['y'][10000:]},
             f
         )
 
