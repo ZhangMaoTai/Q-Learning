@@ -61,6 +61,7 @@ class QTrainer:
 
                 use_baseline = True
                 exp_dataset = None
+                num_baseline_success = 0
 
                 while True:
                     if use_baseline:
@@ -75,7 +76,9 @@ class QTrainer:
 
                     next_state, new_word, reward, done, word_success, letter_success = self.train_env.step(action)
                     if letter_success:
-                        use_baseline = False
+                        num_baseline_success += 1
+                        if num_baseline_success >= 2:
+                            use_baseline = False
 
                     if not use_baseline:
                         exp_dataset = self.replay_buffer.push(state, action, reward, next_state, done)
