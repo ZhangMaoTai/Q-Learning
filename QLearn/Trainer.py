@@ -59,18 +59,32 @@ class QTrainer:
                 episode_len = 0
                 history_action = []
 
+                use_baseline = True
+                exp_dataset = None
+
                 while True:
-                    action = self.agent.get_action(state=state,
-                                                   history_action=history_action)
+                    if use_baseline:
+                        action = self.train_env.baseline_model.guess(
+                            " ".join(self.train_env.word_list[-1]) + " ",
+                            guessed_letters=[ACTION_MAPPING_INT_TO_STR[int(i)] for i in history_action]
+                        )
+                        action = ACTION_MAPPING_STR_TO_INT[action]
+                    else:
+                        action = self.agent.get_action(state=state,
+                                                       history_action=history_action)
+
                     next_state, new_word, reward, done, word_success, letter_success = self.train_env.step(action)
-                    exp_dataset = self.replay_buffer.push(state, action, reward, next_state, done)
+                    if letter_success:
+                        use_baseline = False
+
+                    if not use_baseline:
+                        exp_dataset = self.replay_buffer.push(state, action, reward, next_state, done)
+                        episode_reward += reward
+                        num_letter_success += (1 if letter_success else 0)
+                        num_letter_play += 1
 
                     state = next_state
-                    episode_reward += reward
-                    num_letter_success += (1 if letter_success else 0)
-                    num_letter_play += 1
                     episode_len += 1
-
                     history_action.append(action)
                     progress_bar.update(1)
 

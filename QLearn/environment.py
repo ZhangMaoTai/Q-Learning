@@ -1,5 +1,6 @@
 import torch
 import random
+from Model.baseline import BaselineModel
 from utils.const import *
 
 
@@ -41,6 +42,8 @@ class environment:
 
         self.vocab = self.get_vocab()
         self.vocab_size = len(self.vocab)
+
+        self.baseline_model = BaselineModel(vocab_path=self.vocab_path)
 
         self.current_id = -1
         self.current_word = None
