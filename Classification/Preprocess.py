@@ -46,14 +46,14 @@ def save_data(x, y, save_json):
 
 
 if __name__ == "__main__":
-    # train_x, train_y = construct_data("../words_240000.txt")
-    # test_x, test_y = construct_data("../words_10000.txt")
-    #
-    # print("train :", len(train_x))
-    # print("test :", len(test_x))
-    #
-    # save_data(train_x, train_y, "../train.json")
-    # save_data(test_x, test_y, "../test.json")
+    train_x, train_y = construct_data("../words_240000.txt")
+    test_x, test_y = construct_data("../words_10000.txt")
+
+    print("train :", len(train_x))
+    print("test :", len(test_x))
+
+    save_data(train_x, train_y, "../train.json")
+    save_data(test_x, test_y, "../test.json")
 
     with open("../test.json", "r") as f:
         data = json.load(f)
