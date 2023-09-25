@@ -51,14 +51,14 @@ class Agent:
     def get_action(self,
                    state,
                    history_action: list,
-                   eps=0.20):
+                   eps=0.8):
         state = state.to(self.device)
         qvals = self.eval_model(state).cpu().detach().numpy()
 
         qvals[0][history_action] = float('-inf')      # 不考虑history_action
         action = np.argmax(qvals)
 
-        if np.random.randn() > eps:
+        if np.random.uniform(low=0.0, high=1.0) > eps:
             return random.sample(list(range(26)), 1)[0]
         return action
 
