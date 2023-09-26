@@ -51,6 +51,7 @@ class HangmanAPI(object):
                          map_location=self.device)
         self.model.load_state_dict(ckp)
         self.model.to(self.device)
+        self.model.eval()
 
     @staticmethod
     def determine_hangman_url():
