@@ -38,7 +38,7 @@ class HangmanAPI(object):
         self.timeout = timeout
         self.guessed_letters = []
 
-        full_dictionary_location = "words_250000_train.txt"
+        full_dictionary_location = "./words_250000.txt"
         self.full_dictionary = self.build_dictionary(full_dictionary_location)
         self.full_dictionary_common_letter_sorted = collections.Counter("".join(self.full_dictionary)).most_common()
 
