@@ -8,7 +8,7 @@ import numpy as np
 
 from QLearn.experience import BasicBuffer
 from Model.backbone import ConvDuelingDQN, init_weights, FCDuelingDQN
-from Classification.model import ClassificationModel
+from Classification.model import ClassificationModel, BiGRU
 
 
 class Agent:
@@ -30,8 +30,8 @@ class Agent:
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.eval_model = ClassificationModel().to(self.device)
-        self.target_model = ClassificationModel().to(self.device)
+        self.eval_model = BiGRU().to(self.device)
+        self.target_model = BiGRU().to(self.device)
 
         self.load_state_path = load_state_path
 
