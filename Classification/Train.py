@@ -84,12 +84,12 @@ class Trainer:
 
                     self.writer.add_scalar("losses/Test_LOSS", test_loss, updates)
                     self.writer.add_scalar("losses/F1", F1, updates)
+                    f1_list.append(F1)
 
-                    if F1 > max(f1_list):
+                    if F1 == max(f1_list):
                         torch.save(self.model.state_dict(), os.path.join(save_dir, "best_{}.pth".format(updates)))
                     torch.save(self.model.state_dict(), os.path.join(save_dir, "model_{}.pth".format(updates)))
 
-                    f1_list.append(F1)
                     self.model.train()
 
         self.writer.close()
