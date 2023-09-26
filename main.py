@@ -36,6 +36,9 @@ def parse_args():
 
     parser.add_argument("--save_dir", type=str,
                         default="./save_model", required=False)
+    parser.add_argument("--load_state_path", type=str,
+                        default=None, required=False)
+
 
     args = parser.parse_args()
     return args
@@ -56,7 +59,8 @@ def main():
                   gamma=args.gamma,
                   tau=args.tau,
                   num_warmup_steps=args.num_warmup_steps,
-                  num_training_steps=args.num_updates * args.mini_epoch * (args.max_size / args.batch_size)
+                  num_training_steps=args.num_updates * args.mini_epoch * (args.max_size / args.batch_size),
+                  load_state_path=args.load_state_path
                   )
 
     evaler = Evaler(agent=agent, env=eval_env)

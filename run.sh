@@ -13,4 +13,5 @@ python main.py \
 --tau 0.99 \
 --train_vocab_path ./words_240000.txt \
 --eval_vocab_path ./words_10000.txt \
---save_dir ./save_model/round1
+--save_dir ./save_model/round2 \
+--load_state_path ./save_model/class/model_98000.pth

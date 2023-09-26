@@ -8,11 +8,13 @@ import numpy as np
 
 from QLearn.experience import BasicBuffer
 from Model.backbone import ConvDuelingDQN, init_weights, FCDuelingDQN
+from Classification.model import ClassificationModel
 
 
 class Agent:
 
     def __init__(self,
+                 load_state_path=None,
                  learning_rate=3e-4,
                  gamma=0.99,
                  tau=0.99,
@@ -28,15 +30,23 @@ class Agent:
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.eval_model = FCDuelingDQN().to(self.device)
-        self.target_model = FCDuelingDQN().to(self.device)
+        self.eval_model = ClassificationModel().to(self.device)
+        self.target_model = ClassificationModel().to(self.device)
 
-        self.eval_model.apply(init_weights)
-        self.target_model.apply(init_weights)
+        self.load_state_path = load_state_path
 
-        # hard copy model parameters to target model parameters
-        for eval_param, target_param in zip(self.eval_model.parameters(), self.target_model.parameters()):
-            target_param.data.copy_(eval_param)
+        if self.load_state_path:
+            ckp = torch.load(self.load_state_path,
+                             map_location=self.device)
+            self.eval_model.load_state_dict(ckp)
+            self.target_model.load_state_dict(ckp)
+        else:
+            self.eval_model.apply(init_weights)
+            self.target_model.apply(init_weights)
+
+            # hard copy model parameters to target model parameters
+            for eval_param, target_param in zip(self.eval_model.parameters(), self.target_model.parameters()):
+                target_param.data.copy_(eval_param)
 
         self.optimizer = torch.optim.AdamW(self.eval_model.parameters(),
                                            lr=self.learning_rate)

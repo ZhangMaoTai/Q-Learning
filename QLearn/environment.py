@@ -2,6 +2,7 @@ import torch
 import random
 from Model.baseline import BaselineModel
 from utils.const import *
+from Classification.data import padding
 
 
 def cal_reward(is_match: bool,
@@ -134,22 +135,29 @@ class environment:
             raise RuntimeError("Can't call step because it is over.")
 
     def get_state(self):
-        word_list = [
-            right_pad(list(word), MAX_WORD_LEN)
-            for word in self.word_list
-        ]                                                                   # list[list[str]]
-        word_list = pad_time_step(word_list, MAX_TIME_STEP)                 # list[list[str]]
+        word = [
+            STATE_MAPPING_STR_TO_INT[letter]
+            for letter in self.word_list[-1]
+        ]
+        word = padding(word, MAX_WORD_LEN)                      # List[int]
+        return torch.tensor([word], dtype=torch.int64)          # shape = 1, MAX_WORD_LEN
 
-        id_list = [
-            [STATE_MAPPING_STR_TO_INT[letter] for letter in word]
-            for word in word_list
-        ]                                                                   # list[list[int]]
-
-        return torch.tensor(id_list, dtype=torch.int64).unsqueeze(0).unsqueeze(0)      # shape = (1, 1, MAX_TIME_STEP, MAX_WORD_LEN)
+        # word_list = [
+        #     right_pad(list(word), MAX_WORD_LEN)
+        #     for word in self.word_list
+        # ]                                                                   # list[list[str]]
+        # word_list = pad_time_step(word_list, MAX_TIME_STEP)                 # list[list[str]]
+        #
+        # id_list = [
+        #     [STATE_MAPPING_STR_TO_INT[letter] for letter in word]
+        #     for word in word_list
+        # ]                                                                   # list[list[int]]
+        #
+        # return torch.tensor(id_list, dtype=torch.int64).unsqueeze(0).unsqueeze(0)      # shape = (1, 1, MAX_TIME_STEP, MAX_WORD_LEN)
 
 
 if __name__ == "__main__":
-    env = environment("C:\CODE学习\GitRepo\Q-Learning\words_250000.txt")
+    env = environment("../words_250000.txt")
     env.reset()
     print(env.show_current_word())
 

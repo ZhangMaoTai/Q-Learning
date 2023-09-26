@@ -37,6 +37,13 @@ class QTrainer:
               num_updates,
               save_dir,
               max_norm):
+        # eval
+        self.evaler.set_agent(self.agent)
+        result = self.evaler.eval()
+        self.writer.add_scalar("TestSet/word_success_rate", result['word_success_rate'], 0)
+        self.writer.add_scalar("TestSet/letter_success_rate", result['letter_success_rate'], 0)
+        self.writer.add_scalar("TestSet/episode_reward_mean", result['episode_reward_mean'], 0)
+        self.writer.add_scalar("TestSet/episode_len_mean", result['episode_len_mean'], 0)
 
         for updates in range(1, num_updates+1):
             num_episode = 0
@@ -59,7 +66,7 @@ class QTrainer:
                 episode_len = 0
                 history_action = []
 
-                use_baseline = True
+                use_baseline = False
                 exp_dataset = None
                 num_baseline_success = 0
 
