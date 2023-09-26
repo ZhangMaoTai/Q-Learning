@@ -103,7 +103,7 @@ class QTrainer:
                         num_word_success += (1 if word_success else 0)
                         episode_reward_list.append(episode_reward)
                         episode_len_list.append(episode_len)
-                        self.agent.reset_noise()
+                        # self.agent.reset_noise()
 
                         if log_flag:
                             self.log.info("Current word: {}. History action: {}. Success: {}".format(
