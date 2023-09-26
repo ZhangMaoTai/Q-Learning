@@ -247,15 +247,23 @@ if __name__ == "__main__":
         model_path="./save_model/gru/model_98000.pth"
     )
 
-    for _ in range(10):
-        api.start_game(practice=1, verbose=True)
+    # for _ in range(10):
+    #     api.start_game(practice=1, verbose=True)
+    #
+    # [total_practice_runs, total_recorded_runs, total_recorded_successes,
+    #  total_practice_successes] = api.my_status()  # Get my game stats: (# of tries, # of wins)
+    #
+    # practice_success_rate = total_practice_successes / total_practice_runs
+    #
+    # print('run %d practice games out of an allotted 100,000. practice success rate so far = %.3f' % (
+    # total_practice_runs, practice_success_rate))
 
-    [total_practice_runs, total_recorded_runs, total_recorded_successes,
-     total_practice_successes] = api.my_status()  # Get my game stats: (# of tries, # of wins)
+    for i in range(1000):
+        print('Playing ', i, ' th game')
+        # Uncomment the following line to execute your final runs. Do not do this until you are satisfied with your submission
+        api.start_game(practice=0, verbose=False)
 
-    practice_success_rate = total_practice_successes / total_practice_runs
-
-    print('run %d practice games out of an allotted 100,000. practice success rate so far = %.3f' % (
-    total_practice_runs, practice_success_rate))
+        # DO NOT REMOVE as otherwise the server may lock you out for too high frequency of requests
+        time.sleep(0.5)
 
 
