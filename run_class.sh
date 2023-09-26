@@ -10,4 +10,4 @@ python main_class.py \
 --print_freq 1000 \
 --train_json_path ./train.json \
 --eval_json_path ./test_small.json \
---save_dir ./save_model/class
+--save_dir ./save_model/gru

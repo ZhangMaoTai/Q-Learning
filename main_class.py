@@ -2,7 +2,7 @@ import argparse
 import os
 import torch
 
-from Classification.model import ClassificationModel
+from Classification.model import ClassificationModel, BiGRU
 from Classification.data import Model_Data
 from Classification.Train import Trainer
 from utils.util import seed_everything, get_logger
@@ -55,7 +55,7 @@ def main():
         shuffle=False,
     )
 
-    model = ClassificationModel()
+    model = BiGRU()
 
     trainer = Trainer(
         model=model,
